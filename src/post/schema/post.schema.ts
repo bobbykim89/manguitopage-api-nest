@@ -15,6 +15,9 @@ export class Post {
   @Prop({ required: true })
   image: string;
 
+  @Prop({ required: true })
+  imageId: string;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   author: User;
 
