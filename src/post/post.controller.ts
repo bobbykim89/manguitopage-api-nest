@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { MultipartDto, UpdatePostInputDto } from './dto';
@@ -45,5 +46,12 @@ export class PostController {
     @Param('id') postId: string,
   ) {
     return this.postService.updatePost(dto, userId, postId);
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(JwtGuard)
+  @Delete('id')
+  deletePostById(@Param('id') postId: string, @GetUser() userId: string) {
+    return this.postService.deletePostById(postId, userId);
   }
 }
