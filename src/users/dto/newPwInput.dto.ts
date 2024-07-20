@@ -1,9 +1,11 @@
-import { IsString, IsStrongPassword } from 'class-validator';
+import { IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 
 export class NewPwInputDto {
+  @IsNotEmpty()
   @IsString()
   currentPassword: string;
 
+  @IsNotEmpty()
   @IsString()
   @IsStrongPassword({
     minLength: 8,
