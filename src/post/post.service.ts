@@ -9,7 +9,6 @@ import { Model } from 'mongoose';
 import { Post } from './schema';
 import { User } from '@/users/schema';
 import { Comment } from '@/comment/schema';
-import { ConfigService } from '@nestjs/config';
 import { MultipartDto, UpdatePostInputDto } from './dto';
 import { MultipartService } from './multipart';
 
@@ -20,7 +19,6 @@ export class PostService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Comment.name) private commentModel: Model<Comment>,
     private multipart: MultipartService,
-    private config: ConfigService,
   ) {}
 
   async getAllPost() {
