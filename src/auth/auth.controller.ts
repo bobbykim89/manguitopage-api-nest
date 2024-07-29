@@ -11,18 +11,26 @@ import { AuthService } from './auth.service';
 import { AuthInputDto } from './dto';
 import { GetUser } from './decorator';
 import { JwtGuard } from './guard';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary:
+      'Get current user info based on bearer token on Authorization header',
+  })
   @Get()
   getCurrentUser(@GetUser('id') userId: string) {
     console.log(userId);
     return this.authService.getCurrentUser(userId);
   }
 
+  @ApiOperation({
+    summary: 'login user based on user credentials',
+  })
   @HttpCode(HttpStatus.OK)
   @Post()
   loginUser(@Body() dto: AuthInputDto) {
