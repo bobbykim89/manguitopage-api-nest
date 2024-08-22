@@ -14,8 +14,9 @@ import { PostService } from './post.service';
 import { MultipartDto, UpdatePostInputDto } from './dto';
 import { GetUser } from '@/auth/decorator';
 import { JwtGuard } from '@/auth/guard';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Post')
 @Controller('post')
 export class PostController {
   constructor(private postService: PostService) {}
@@ -66,7 +67,7 @@ export class PostController {
   })
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtGuard)
-  @Delete('id')
+  @Delete(':id')
   deletePostById(@Param('id') postId: string, @GetUser() userId: string) {
     return this.postService.deletePostById(postId, userId);
   }
