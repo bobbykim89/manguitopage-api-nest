@@ -1,6 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
-// import { CloudinaryResponse } from './cloudinaryResponse.types';
 import { ImageInputDto, ContentInputDto } from '../dto';
 import { ConfigService } from '@nestjs/config';
 

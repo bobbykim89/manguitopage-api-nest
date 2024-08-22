@@ -11,8 +11,9 @@ import { AuthService } from './auth.service';
 import { AuthInputDto } from './dto';
 import { GetUser } from './decorator';
 import { JwtGuard } from './guard';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -24,7 +25,6 @@ export class AuthController {
   })
   @Get()
   getCurrentUser(@GetUser('id') userId: string) {
-    console.log(userId);
     return this.authService.getCurrentUser(userId);
   }
 

@@ -7,7 +7,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schema';
-import { UserInputDto, NewPwInputDto, NewUsernameInputDto } from './dto';
+import {
+  UserInputDto,
+  NewPwInputDto,
+  NewUsernameInputDto,
+  AdminPhraseSecretInputDto,
+} from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +27,7 @@ export class UsersService {
 
   async signupUser(dto: UserInputDto): Promise<{ access_token: string }> {
     const { email, password, name } = dto;
-    let user = await this.userModel.findOne({ email });
+    let user = await this.userModel.findOne({ email }).select('-password');
     if (user) {
       throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
     }
@@ -79,15 +84,40 @@ export class UsersService {
     return new HttpException('Resource Updated Successfully', HttpStatus.OK);
   }
   async updateUsername(dto: NewUsernameInputDto, userId: string) {
+    const user = await this.userModel.findById(userId).select('-password');
+    if (!user) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        user.id,
+        { name: dto.username },
+        { new: true, returnDocument: 'after' },
+      )
+      .select('-password');
+    if (!updatedUser) {
+      throw new HttpException(
+        'Unexpected Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return updatedUser;
+  }
+  async setAdmin(dto: AdminPhraseSecretInputDto, userId: string) {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      user.id,
-      { name: dto.username },
-      { new: true, returnDocument: 'after' },
-    );
+    if (dto.adminPhrase !== this.config.get<string>('ADMIN_PHRASE_SECRET')) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        user.id,
+        { admin: true },
+        { new: true, returnDocument: 'after' },
+      )
+      .select('-password');
     if (!updatedUser) {
       throw new HttpException(
         'Unexpected Error',

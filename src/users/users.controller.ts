@@ -8,11 +8,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserInputDto, NewPwInputDto, NewUsernameInputDto } from './dto';
+import {
+  UserInputDto,
+  NewPwInputDto,
+  NewUsernameInputDto,
+  AdminPhraseSecretInputDto,
+} from './dto';
 import { JwtGuard } from '@/auth/guard';
 import { GetUser } from '@/auth/decorator';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
@@ -20,7 +26,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'POST new user data with provided user credentials',
   })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   signupUser(@Body() dto: UserInputDto) {
     return this.userService.signupUser(dto);
@@ -45,5 +51,18 @@ export class UsersController {
     @GetUser('id') userId: string,
   ) {
     return this.userService.updateUsername(dto, userId);
+  }
+
+  @ApiOperation({
+    summary:
+      'PUT user admin status to true if correct admin secret phrase is provided',
+  })
+  @UseGuards(JwtGuard)
+  @Put('setadmin')
+  setAdmin(
+    @Body() dto: AdminPhraseSecretInputDto,
+    @GetUser('id') userId: string,
+  ) {
+    return this.userService.setAdmin(dto, userId);
   }
 }

@@ -13,8 +13,9 @@ import { CommentService } from './comment.service';
 import { CommentInputDto } from './dto';
 import { JwtGuard } from '@/auth/guard';
 import { GetUser } from '@/auth/decorator';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Comment')
 @Controller('comment')
 export class CommentController {
   constructor(private commentService: CommentService) {}
